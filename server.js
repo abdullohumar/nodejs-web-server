@@ -1,5 +1,4 @@
 import http from 'http';
-import method from 'http';
 
 const requestListener = (req, res) => {
     res.setHeader('Content-Type', 'text/html');
@@ -12,16 +11,17 @@ const requestListener = (req, res) => {
     }
 
     if(method === 'POST') {
-        res.end('Ini adalah method POST');
+        let body = [];
+
+        req.on('data', (chunk) => {
+            body.push(chunk);
+        }).on('end', () => {
+            body = Buffer.concat(body).toString();
+            const { name } = JSON.parse(body);
+            res.end(`<h1>Hai, ${name}</h1>`)
+        })
     }
 
-    if(method === 'PUT') {
-        res.end('Ini adalah method PUT');
-    }
-
-    if(method === 'DELETE') {
-        res.end('Ini adalah method DELETE');
-    }
 }
 
 const server = http.createServer(requestListener);
